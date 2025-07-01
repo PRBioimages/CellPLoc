@@ -1,0 +1,113 @@
+basic:
+  seed: 233
+  GPU: [0,1]
+  debug: False
+  id: 'unnamed'
+  mode: train
+  search: False
+  amp: 'Native'
+
+
+softmatch:
+  num_classes: 19
+  ema_p: 0.999
+  dist_uniform: False
+  n_sigma: 2
+  per_class: True
+
+
+experiment:
+#  name: 'RandomKTrainTestSplit'
+  name: 'RandomKTrainTestSplit_Mix_transform_strong'
+#  name: 'RandomKTrainTestSplit_Mix_transform_strong_HPAv23'
+  Mix_transform_strong: True
+  use_hard_label: True  # True
+  use_hard_mask: True  # True
+  alpha: 1.0
+  random_state: 233
+  run_fold: 1
+  batch_sampler: False
+  weight: False
+  method: 'custom1'
+  preprocess: JPEG_512_pan
+  image_only: True
+  skip_outlier: True
+  outlier: train
+  count: 16
+  csv_file: './Meta_files/all_cell_pseudo.csv'  # HPAv21, from Zhu et al
+#  csv_file: './Meta_files/subcellular_Cellimages_19classes_v23_unique_with_label-num.csv'  # HPAv23
+
+
+data:
+  dir_sv: './Meta_files/all_cell_pseudo.csv'
+#  dir_sv: './Meta_files/subcellular_Cellimages_19classes_v23_unique_with_label-num.csv'
+  cell: 'input/train_cell_256'
+#  celllabel: 'imagelabel'
+  celllabel: 'pseudolabel'  # only use from all_cell_pseudo.csv
+
+
+model:
+#  name: 'xception'
+  name: 'max-gluon_inception_v3'
+#  name: 'VMamba'
+#  name: 'max-efficientnet_b3'
+#  name: 'max-efficientnet_b4'
+#  name: 'transformer-swin_s3_tiny_224'
+#  name: 'transformer-deit3_small_patch16_224'
+  need_fp: False
+  out_feature: 19
+  params:
+    dropout: 0.5
+    pretrained: True
+
+
+train:
+  dir: './Results'
+  batch_size: 20
+  start_epoch: 0
+  num_epochs: 15
+  cutmix: False
+  beta: 1
+  cutmix_prob: 1
+  cutmix_prob_increase: 0
+  validations_round: 1
+  freeze_backbond: 0
+  freeze_top_layer_groups: 0
+  freeze_start_epoch: 0
+
+
+eval:
+  batch_size: 1
+
+
+loss:
+#  name: 'bce'
+  name: 'AsymmetricLoss'
+  cellweight: 0.1
+  imgweight: 1
+  pos_weight: 1
+  params:
+#    reduction: 'none'
+    gamma_neg: 2
+
+
+optimizer:
+  name: 'Adam'
+  step: 1
+  params:
+    lr: 0.0002  # 0.0002
+    weight_decay: 0
+
+
+scheduler:
+  name: 'CosineAnnealingLR'
+  warm_up: True
+  params:
+    factor: 0.1
+    patience: 10
+
+
+transform:
+  name: 's_0220/sin_exp11_224'
+  num_preprocessor: 10
+  size: 224

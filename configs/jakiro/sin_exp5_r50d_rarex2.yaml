@@ -1,0 +1,97 @@
+basic:
+  seed: 233
+  GPU: 0
+  debug: False
+  id: 'unnamed'
+  mode: train
+  search: False
+  amp: 'Native'
+
+experiment:
+  name: 'RandomKTrainTestSplit'
+  random_state: 233
+  run_fold: 0
+  batch_sampler: False
+  weight: False
+  preprocess: JPEG_512_pan
+  image_only: True
+  skip_outlier: True
+  outlier: train
+  count: 16
+  csv_file: Psuedo_Nucleoplasm_Cytosol_and_thresh0.25.csv;Psuedo_Nucleoplasm_Cytosol_or_thresh0.25.csv
+  label: gt_Nucleoplasm;gt_Cytosol
+
+data:
+  dir_sv: '../tile_128'
+  cell: 'input/train_cell_256'
+# transclass: 0;1  class1 -> class0 查找含有0或者1的类，把1类标注赋予0，可能有除了0,1外的类
+  transclass: 'all'
+# withclassor: 0;1  class1 or class0 查找包含0或1的类，也可能有0,1以外的类
+  withclassor: 'all'
+# onlyclassand: '16;0' 只包含0,16类
+# onlyclassand: '0;16'
+
+model:
+#  name: 'resnet50d'
+#  name: 'xception'
+#  name: 'SA_attention_resnet50d'
+  name: 'Cell_resnet50d'
+#  name: 'SA_Max_Calibration_resnet50d'
+#  from_checkpoint: '/home/xlzhu/Work1_SingleCellPrediciton/Results/work2_dual-head/test/f1_epoch-0.pth'
+  out_feature: 2
+  params:
+    dropout: 0.5
+    pretrained: True
+
+
+train:
+#  dir: '../results'
+  dir: '/home/xlzhu/Work1_SingleCellPrediciton/Results/work8_singlecell'
+  batch_size: 128
+  num_epochs: 8
+  cutmix: False
+  beta: 1
+  cutmix_prob: 1
+  cutmix_prob_increase: 0
+  validations_round: 1
+  freeze_backbond: 0
+  freeze_top_layer_groups: 0
+  freeze_start_epoch: 0
+
+eval:
+  batch_size: 128
+
+loss:
+  name: 'bce'
+#  name: 'focal_loss'
+#  cellweight: 0.1
+  cellweight: 0
+#  pos_weight: 1.0
+  params:
+#    weight: [ 0.02531037, 0.06579517, 0.04364358, 0.04229549, 0.03539962,
+#        0.03934447, 0.04536092, 0.03703704, 0.04307305, 0.05735393,
+#        0.04914732, 0.30151134, 0.0418487 , 0.0347524 , 0.03067138,
+#        0.10425721, 0.03305898, 0.05933908, 0.15075567]
+#    eps: 0.1
+    reduction: 'none'
+#    gamma: 2
+
+optimizer:
+  name: 'Adam'
+  step: 1
+  params:
+    lr: 0.0002
+    weight_decay: 0
+
+scheduler:
+  name: 'CosineAnnealingLR'
+  warm_up: True
+  params:
+    factor: 0.1
+    patience: 10
+
+transform:
+  name: 's_0220/sin_exp11_224'
+  num_preprocessor: 10
+#  size: 256
+  size: 224
