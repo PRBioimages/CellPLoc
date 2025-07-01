@@ -3,7 +3,7 @@ from dataloaders import get_dataloader
 from models import get_model
 from losses import get_loss
 from optimizers import get_optimizer
-from basic_train import Pseudo_train_SoftMatch_HPAv23
+from basic_train import Pseudo_train_baseline, Pseudo_train_HPAv21, Pseudo_train_HPAv23
 from scheduler import get_scheduler
 from utils import load_matched_state
 from torch.utils.tensorboard import SummaryWriter
@@ -62,7 +62,7 @@ if __name__ == '__main__':
                 scheduler = None
             if len(cfg.basic.GPU) > 1:
                 model = torch.nn.DataParallel(model)
-            Pseudo_train_SoftMatch_HPAv23(cfg, model, train_dl, loss_func, optimizer, result_path, scheduler, writer)
+            Pseudo_train_HPAv21(cfg, model, train_dl, loss_func, optimizer, result_path, scheduler, writer)
     else:
         train_dl, _, _ = get_dataloader(cfg)(cfg).get_dataloader()
         print('[ i ] The length of train_dl is {}'.format(len(train_dl)))
@@ -85,4 +85,4 @@ if __name__ == '__main__':
             scheduler = None
         if len(cfg.basic.GPU) > 1:
             model = torch.nn.DataParallel(model)
-        Pseudo_train_SoftMatch_HPAv23(cfg, model, train_dl, loss_func, optimizer, result_path, scheduler, writer)
+        Pseudo_train_HPAv21(cfg, model, train_dl, loss_func, optimizer, result_path, scheduler, writer)
